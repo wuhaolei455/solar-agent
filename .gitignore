@@ -31,6 +31,9 @@ eggs/
 .DS_Store
 Thumbs.db
 
+# TTS 生成的临时音频
+output_*.mp3
+
 # Logs
 *.log
 
