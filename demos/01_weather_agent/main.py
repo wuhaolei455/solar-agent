@@ -1,13 +1,25 @@
-from dataclasses import dataclass
+"""Demo 01: 天气预报 Agent
 
+使用 LangChain Agent 构建一个带双关语风格的天气预报助手。
+支持工具调用、上下文传递、结构化输出和对话记忆。
+"""
+
+import sys
+from dataclasses import dataclass
+from pathlib import Path
+
+# 将项目根目录加入 sys.path，以便导入 shared 模块
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
+
+from shared.utils import load_env
 from langchain.agents import create_agent
 from langchain.chat_models import init_chat_model
 from langchain.tools import tool, ToolRuntime
 from langgraph.checkpoint.memory import InMemorySaver
-from dotenv import load_dotenv
 
 
-load_dotenv()
+# 加载环境变量
+load_env()
 
 
 # 定义系统提示
@@ -77,10 +89,6 @@ response = agent.invoke(
 )
 
 print(response['structured_response'])
-# ResponseFormat(
-#     punny_response="佛罗里达今天依然是'阳光灿烂'的一天！阳光正在播放'rey-dio'热门歌曲！我得说，这是进行'solar-bration'的完美天气！如果你希望下雨，恐怕这个想法已经'被冲走'了——预报仍然'清晰地'灿烂！",
-#     weather_conditions="佛罗里达总是阳光明媚！"
-# )
 
 # 注意，我们可以使用相同的 `thread_id` 继续对话。
 response = agent.invoke(
@@ -90,7 +98,3 @@ response = agent.invoke(
 )
 
 print(response['structured_response'])
-# ResponseFormat(
-#     punny_response="你真是'雷'厉风行地欢迎！帮助你保持'当前'天气总是'轻而易举'。我只是'云'游四方，等待随时'淋浴'你更多预报。祝你在佛罗里达的阳光下度过'sun-sational'的一天！",
-#     weather_conditions=None
-# )
