@@ -52,7 +52,7 @@ run:
 	fi; \
 	echo "正在运行 $$DEMO_DIR/main.py ..."; \
 	echo "============================================"; \
-	python $$DEMO_DIR/main.py
+	PYTHONPATH=$(CURDIR) python $$DEMO_DIR/main.py
 
 # 安装依赖并运行
 setup:

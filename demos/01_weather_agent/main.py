@@ -1,25 +1,11 @@
-"""Demo 01: 天气预报 Agent
-
-使用 LangChain Agent 构建一个带双关语风格的天气预报助手。
-支持工具调用、上下文传递、结构化输出和对话记忆。
-"""
-
-import sys
 from dataclasses import dataclass
-from pathlib import Path
-
-# 将项目根目录加入 sys.path，以便导入 shared 模块
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
-
-from shared.utils import load_env
+from shared import setup
 from langchain.agents import create_agent
 from langchain.chat_models import init_chat_model
 from langchain.tools import tool, ToolRuntime
 from langgraph.checkpoint.memory import InMemorySaver
 
-
-# 加载环境变量
-load_env()
+setup()
 
 
 # 定义系统提示
