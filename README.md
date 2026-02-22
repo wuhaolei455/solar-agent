@@ -1,140 +1,100 @@
 # solar-agent
+这里是60天转大模型agent开发的学习仓库，欢迎志同道合的朋友们star关注来一起学习，希望我们可以一起协同进步，达成所愿！
 
-LangChain + LangGraph 多 Agent 系统学习项目，从基础到高级的完整示例。
+扫码加微信，拉你进学习交流群 👇
 
-## 📚 Demo 列表
+<img src="./images/wechat.png" width="200" alt="微信二维码" />
+
+## langchain学习
+
+基于 LangChain + LangGraph 框架，从单个 LLM 调用到多 Agent 协作系统的完整学习路径。
 
 ### 基础系列（01-07）
 
-| Demo | 名称 | 核心概念 | 端口 |
-|------|------|---------|------|
-| 01 | Weather Agent | Tool Use 基础 | - |
-| 02 | LCEL Chain | 链式编排 | - |
-| 03 | Gradio | Web UI 集成 | - |
-| 04 | History Demo | 对话记忆管理 | - |
-| 05 | Stream | 流式输出 | - |
-| 06 | Multimodal Voice | 多模态交互 | - |
-| 07 | Deep Thinking | 思维链推理 | - |
+| Demo | 名称 | 核心概念 | 关键 API |
+|------|------|---------|---------|
+| 01 | Weather Agent | Tool Use / ReAct | `create_react_agent` `@tool` |
+| 02 | LCEL Chain | 链式编排 | `prompt \| model \| parser` |
+| 03 | Gradio | Web UI 集成 | `gr.ChatInterface` |
+| 04 | History Demo | 对话记忆管理 | `RunnableWithMessageHistory` |
+| 05 | Stream | 流式输出 | `.stream()` + `yield` |
+| 06 | Multimodal Voice | 多模态（ASR+TTS） | `whisper` `edge-tts` |
+| 07 | Deep Thinking | 思维链推理 | Monkey Patch + `reasoning_content` |
 
 ### 高级多 Agent 系列（08-10）
 
-| Demo | 名称 | 架构模式 | 核心概念 | 端口 |
-|------|------|---------|---------|------|
-| **08** | 深度研报系统 | **Pipeline + Reflection** | Supervisor、ReAct Agent、循环修正 | 7890 |
-| **09** | 智能客服系统 | **Router + Handoff** | 意图路由、专业 Agent、Human-in-the-loop | 7891 |
-| **10** | AI 自媒体运营助手 | **Planner + Parallel + Reflection** | 任务规划、并行执行、多平台适配 | 7892 |
+| Demo | 名称 | 架构模式 | 核心概念 |
+|------|------|---------|---------|
+| 08 | 深度研报系统 | Pipeline + Reflection | `StateGraph` ReAct Agent 循环修正 |
+| 09 | 智能客服系统 | Router + Handoff | 意图路由 Human-in-the-loop |
+| 10 | AI 自媒体运营助手 | Planner + Parallel + Reflection | 并行节点 条件边 多平台适配 |
 
-## 🎯 核心概念对照表
+### 核心知识点速查
 
-### LangChain 核心能力
+```
+LangChain 三件套：
+  Prompt Template  ──┐
+  Chat Model       ──┼──▶  LCEL 管道（|）──▶  Output Parser
+  Memory / History ──┘
 
-| 能力 | 说明 | 示例 Demo |
-|------|------|----------|
-| 模型抽象 | `init_chat_model("openai:xxx")` 一行切换模型 | 所有 demo |
-| Prompt 模板 | `ChatPromptTemplate` 结构化管理提示词 | 02-07 |
-| 链式组合 | `prompt \| model \| parser` LCEL 管道 | 02-07 |
-| 记忆管理 | `RunnableWithMessageHistory` 自动注入历史 | 04-07 |
-| 工具调用 | Agent + Tool 编排 | 01, 08-10 |
+LangGraph 图结构：
+  StateGraph ──▶ 定义节点（Node = Agent/函数）
+              ──▶ 添加边（顺序 / 条件）
+              ──▶ compile() ──▶ .stream() / .invoke()
 
-### LangGraph 多 Agent 架构
+多 Agent 模式：
+  Pipeline      顺序执行，适合固定流程
+  Router        意图分发，适合多场景客服
+  Reflection    循环修正，适合质量要求高的生成任务
+  Parallel      并行加速，适合独立子任务
+  Human-in-loop 人工介入，适合高风险决策
+```
 
-| 架构模式 | 说明 | 使用场景 | Demo |
-|---------|------|---------|------|
-| **Pipeline** | 线性流水线，任务顺序执行 | 固定流程、步骤明确 | 08 |
-| **Supervisor** | 中心调度，多 Agent 并行 | 任务可并行、需协调 | 08 |
-| **Router** | 意图路由，按类型分发 | 多场景分流 | 09 |
-| **Handoff** | Agent 间交接和切换 | 专业分工、责任明确 | 09 |
-| **Planner** | 动态任务拆解和规划 | 复杂流程、需灵活调度 | 10 |
-| **Reflection** | 质量审核 + 循环修正 | 需迭代优化的任务 | 08, 10 |
-| **Parallel** | 并行执行多个 Agent | 独立任务、提升效率 | 10 |
-| **Human-in-the-loop** | 关键节点人工介入 | 需人工决策的场景 | 09 |
-
-## 🚀 快速开始
+### 快速运行
 
 ```bash
-# 克隆项目
-git clone <repo-url>
-cd solar-agent
-
-# 运行某个 demo（以 08 为例）
-make install DEMO=08
-make run DEMO=08
+# 安装依赖并运行某个 demo
+make setup DEMO=08   # 深度研报
+make setup DEMO=09   # 智能客服
+make setup DEMO=10   # 自媒体助手
 ```
 
-## 💡 架构设计思路
+---
 
-### Demo 08：深度研报系统
-```
-START → Planner → Researcher → Analyst → Writer → Reviewer → END
-                                           ↑          │
-                                           └── revise ─┘ (max 2 rounds)
-```
-**关键特性：**
-- Planner 拆解研究问题
-- Researcher 使用 ReAct Agent 自主调用搜索工具
-- Reflection 循环：评分 < 7 退回修改
-- Annotated State 支持多节点追加写入
+## deepmind学习
 
-### Demo 09：智能客服系统
-```
-                      ┌─ FAQ Agent
-                      ├─ Order Agent (ReAct)
-START → Router Agent ─┼─ Tech Support Agent (ReAct)
-                      ├─ Complaint Agent (escalate?)
-                      └─ Chitchat Agent
-                          ↓
-                      QA Inspector → END
-```
-**关键特性：**
-- Router 意图识别（LLM 分类）
-- 条件路由到 5 个专业 Agent
-- Complaint Agent 支持升级人工
-- QA Inspector 敏感词过滤
+基于 [MiniMind](https://github.com/jingyaogong/minimind) 从零实现轻量级大语言模型，配合 [MiniMind-in-Depth](https://github.com/hans0809/MiniMind-in-Depth) 的深度源码解析系列，理解 LLM 底层原理。
 
-### Demo 10：AI 自媒体运营助手
-```
-START → Planner → Trend Researcher → Content Creator
-                                           ↓
-                       ┌───────────────────┴───────────────────┐
-                 Fact Checker                            SEO Optimizer
-                 (并行执行)                               (并行执行)
-                       └───────────────────┬───────────────────┘
-                                           ↓
-                                        Editor
-                                           ↓
-                              ┌────────────┴────────────┐
-                       score < 8                    score >= 8
-                              ↓                         ↓
-                    revise → Content Creator    Platform Adapter → END
-```
-**关键特性：**
-- Planner 任务规划
-- 并行执行（Fact Checker + SEO Optimizer）
-- Reflection 循环（Editor 审核 + 修改）
-- 结构化输出（多平台格式 JSON）
+### 🌱 基础构建
 
-## 🤔 反思问题
+| # | 主题 | 你会学到 |
+|---|------|---------|
+| 1 | [如何从头训练 tokenizer](https://github.com/hans0809/MiniMind-in-Depth/blob/main/src/1-%E5%A6%82%E4%BD%95%E4%BB%8E%E5%A4%B4%E8%AE%AD%E7%BB%83tokenizer.md) | BPE 算法、词表构建、分词逻辑 |
+| 2 | [RMSNorm 玄机](https://github.com/hans0809/MiniMind-in-Depth/blob/main/src/2-%E4%B8%80%E8%A1%8C%E4%BB%A3%E7%A0%81%E4%B9%8B%E5%B7%AE%EF%BC%8C%E6%A8%A1%E5%9E%8B%E6%80%A7%E8%83%BD%E6%8F%90%E5%8D%87%E8%83%8C%E5%90%8E%E7%9A%84RMSNorm%E7%8E%84%E6%9C%BA.md) | LayerNorm vs RMSNorm、训练稳定性 |
+| 3 | [原始 Transformer 位置编码及缺陷](https://github.com/hans0809/MiniMind-in-Depth/blob/main/src/3-%E5%8E%9F%E5%A7%8BTransformer%E7%9A%84%E4%BD%8D%E7%BD%AE%E7%BC%96%E7%A0%81%E5%8F%8A%E5%85%B6%E7%BC%BA%E9%99%B7.md) | 正弦位置编码、长度外推问题 |
+| 4 | [旋转位置编码 RoPE 全解析](https://github.com/hans0809/MiniMind-in-Depth/blob/main/src/4-%E6%97%8B%E8%BD%AC%E4%BD%8D%E7%BD%AE%E7%BC%96%E7%A0%81%E5%8E%9F%E7%90%86%E4%B8%8E%E5%BA%94%E7%94%A8%E5%85%A8%E8%A7%A3%E6%9E%90.md) | RoPE 原理、复数旋转、上下文扩展 |
 
-### LangChain 在这里解决了什么？
-LangChain 提供了模型抽象、Prompt 模板、链式编排、记忆管理等统一接口，让切换模型只需改一行字符串，组装复杂流程只需用 | 管道符。
+### 🧱 架构进阶
 
-### "模式切换"本质是什么？
-本质是条件路由（if/else），通过 `add_conditional_edges` 根据 State 动态决定下一步走向。
+| # | 主题 | 你会学到 |
+|---|------|---------|
+| 5 | [魔改注意力机制：效率优化大盘点](https://github.com/hans0809/MiniMind-in-Depth/blob/main/src/5-%E9%AD%94%E6%94%B9%E7%9A%84%E6%B3%A8%E6%84%8F%E5%8A%9B%E6%9C%BA%E5%88%B6%EF%BC%8C%E7%BB%86%E6%95%B0%E5%BD%93%E4%BB%A3LLM%E7%9A%84%E6%95%88%E7%8E%87%E4%BC%98%E5%8C%96%E6%89%8B%E6%AE%B5.md) | MHA → GQA → MQA、KV Cache、FlashAttention |
+| 6 | [从稠密到稀疏：MoE 专家混合模型](https://github.com/hans0809/MiniMind-in-Depth/blob/main/src/6-%E4%BB%8E%E7%A8%A0%E5%AF%86%E5%88%B0%E7%A8%80%E7%96%8F%EF%BC%8C%E8%AF%A6%E8%A7%A3%E4%B8%93%E5%AE%B6%E6%B7%B7%E5%90%88%E6%A8%A1%E5%9E%8BMOE.md) | MoE 原理、Router 门控、负载均衡 |
+| 7 | [像搭积木一样构建一个大模型](https://github.com/hans0809/MiniMind-in-Depth/blob/main/src/7-%E5%83%8F%E6%90%AD%E7%A7%AF%E6%9C%A8%E4%B8%80%E6%A0%B7%E6%9E%84%E5%BB%BA%E4%B8%80%E4%B8%AA%E5%A4%A7%E6%A8%A1%E5%9E%8B.md) | Embedding → Attention → FFN → LM Head 完整串联 |
 
-### 流式输出到底发生在什么层？
-```
-1. 模型层：逐 token 生成
-     ↓
-2. API 层：SSE (Server-Sent Events) 推送 chunk
-     ↓
-3. LangChain 层：.stream() 将 SSE 转为 Python 迭代器
-     ↓
-4. 应用层：yield 把每次累积的文本传递给框架
-     ↓
-5. Gradio 层：检测到 yield 就刷新聊天界面
-```
+### 🧪 训练与调优
 
-### 一次对话，真正"不可控"的部分是哪一步？
-**不可控：** 模型推理生成文本的过程（概率采样）
-**可控：** 模型调用工具、输出格式（通过 JSON Schema 约束）
+| # | 主题 | 你会学到 |
+|---|------|---------|
+| 8 | [LLM 预训练流程全解](https://github.com/hans0809/MiniMind-in-Depth/blob/main/src/8-LLM%E9%A2%84%E8%AE%AD%E7%BB%83%E6%B5%81%E7%A8%8B%E5%85%A8%E8%A7%A3.md) | 数据处理、损失函数、训练循环、checkpoint |
+| 9 | [指令微调 SFT：从"能说"到"会听"](https://github.com/hans0809/MiniMind-in-Depth/blob/main/src/9-%E6%8C%87%E4%BB%A4%E5%BE%AE%E8%B0%83%E8%AF%A6%E8%A7%A3-%E8%AE%A9%E5%A4%A7%E6%A8%A1%E5%9E%8B%E4%BB%8E%E2%80%9C%E8%83%BD%E8%AF%B4%E2%80%9D%E5%8F%98%E5%BE%97%E2%80%9C%E4%BC%9A%E5%90%AC%E2%80%9D.md) | Chat 数据格式、指令跟随、掩码策略 |
+| 10 | [DPO：大模型对齐训练新范式](https://github.com/hans0809/MiniMind-in-Depth/blob/main/src/10-DPO-%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%AF%B9%E9%BD%90%E8%AE%AD%E7%BB%83%E7%9A%84%E6%96%B0%E8%8C%83%E5%BC%8F.md) | RLHF vs DPO、偏好数据、隐式奖励 |
 
+### 🧰 模型优化与压缩
+
+| # | 主题 | 你会学到 |
+|---|------|---------|
+| 11 | [LoRA：LLM 轻量化微调的利器](https://github.com/hans0809/MiniMind-in-Depth/blob/main/src/11-LoRA-LLM%E8%BD%BB%E9%87%8F%E5%8C%96%E5%BE%AE%E8%B0%83%E7%9A%84%E5%88%A9%E5%99%A8.md) | 低秩分解原理、参数冻结、适配器插入 |
+| 12 | [从白盒到黑盒：大模型蒸馏技术全掌握](https://github.com/hans0809/MiniMind-in-Depth/blob/main/src/12-%E4%BB%8E%E7%99%BD%E7%9B%92%E5%88%B0%E9%BB%91%E7%9B%92%EF%BC%8C%E5%85%A8%E9%9D%A2%E6%8E%8C%E6%8F%A1%E5%A4%A7%E6%A8%A1%E5%9E%8B%E8%92%B8%E9%A6%8F%E6%8A%80%E6%9C%AF.md) | KD Loss、软标签、Teacher-Student 框架 |
+
+> 源码解析项目地址：[MiniMind-in-Depth](https://github.com/hans0809/MiniMind-in-Depth) ｜ 原始项目：[MiniMind](https://github.com/jingyaogong/minimind)
