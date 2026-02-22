@@ -1,0 +1,6 @@
+langchain==1.2.0
+langchain-openai==1.1.6
+langchain-community==0.4.1
+langgraph==1.0.8
+python-dotenv==1.2.1
+gradio==6.2.0
